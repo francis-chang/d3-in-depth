@@ -1,17 +1,18 @@
 import React, { useEffect, useRef } from 'react'
 import { select, selectAll } from 'd3-selection'
+
 const Selection: React.FC = () => {
-    const svgSelection = useRef<null | SVGSVGElement>(null)
+    const svgRef = useRef<null | SVGSVGElement>(null)
 
     useEffect(() => {
         /*
-            svgSelection is a ref object
-            svgSelection.current is a reference to the DOM node
+            svgRef is a ref object
+            svgRef.current is a reference to the DOM node
             select() provides a wrapper around the selected
                 element for modifications
         */
-        console.log(svgSelection.current)
-        console.log(select(svgSelection.current))
+        console.log(svgRef.current)
+        console.log(select(svgRef.current))
 
         /*
             select() can target W3C selector strings 
@@ -24,7 +25,7 @@ const Selection: React.FC = () => {
                 to help with modifying the selected element
             <svg width={100} height={100} fill="blue" />
         */
-        select(svgSelection.current)
+        select(svgRef.current)
             .append('rect')
             .attr('width', 100)
             .attr('height', 100)
@@ -48,7 +49,7 @@ const Selection: React.FC = () => {
 
         /*
             Groups are a way to group elements together
-            'g' is a group element
+            useful for translating all elements 
         */
         const groupedElement = select('.group').append('g')
 
@@ -63,11 +64,14 @@ const Selection: React.FC = () => {
             .attr('cy', 50)
             .attr('r', 40)
             .attr('fill', 'teal')
+
+        groupedElement.attr('transform', 'translate(0,50)')
     }, [])
 
     return (
-        <div>
-            <svg ref={svgSelection} />
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/*default svg size is 300x150 */}
+            <svg ref={svgRef} />
             <svg className="foo" />
             <svg id="bar" />
             <svg className="selectAll" />
