@@ -4,35 +4,55 @@ const Selection: React.FC = () => {
     const svgSelection = useRef<null | SVGSVGElement>(null)
 
     useEffect(() => {
-        //a ref object
-        console.log(svgSelection)
-        //the instance of the dom node
+        /*
+            svgSelection is a ref object
+            svgSelection.current is a reference to the DOM node
+            select() provides a wrapper around the selected
+                element for modifications
+        */
         console.log(svgSelection.current)
-        //selects the first matching element
         console.log(select(svgSelection.current))
-        //similar to document.querySelector
-        //returns a wrapper with properties and methods that we can use to modify the dom element
+
+        /*
+            select() can target W3C selector strings 
+                eg select(#id-name) or  select(.class-name)
+        */
         console.log(select('.foo'), select('#bar'))
-        console.log(document.querySelectorAll('.foo'))
-        console.log(selectAll('.foo'))
-        selectAll('.foo')
+
+        /*
+            select() provides methods and properties
+                to help with modifying the selected element
+            <svg width={100} height={100} fill="blue"
+        */
+        select(svgSelection.current)
             .append('rect')
-            .attr('width', 400)
-            .attr('height', 300)
-            .attr('fill', (what, i) => {
-                console.log(what)
-                if (i === 0) {
-                    return 'blue'
+            .attr('width', 100)
+            .attr('height', 100)
+            .attr('fill', 'blue')
+
+        /*
+            selectAll() still returns a selection object 
+            but refers to multiple elements
+        */
+        selectAll('.selectAll')
+            .append('rect')
+            .attr('width', 100)
+            .attr('height', 100)
+            .attr('fill', (_, i) => {
+                if (i) {
+                    return 'orange'
                 } else {
                     return 'red'
                 }
             })
-    }, [svgSelection])
+    })
     return (
         <div>
             <svg ref={svgSelection} />
             <svg className="foo" />
-            <svg className="foo" />
+            <svg id="bar" />
+            <svg className="selectAll" />
+            <svg className="selectAll" />
         </div>
     )
 }
