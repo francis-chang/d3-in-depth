@@ -55,6 +55,11 @@ const Axis: React.FC = () => {
         .range([0, dimensions.width - dimensions.marginLeft])
         .padding(0.1)
 
+    /**
+     * generates axis functions for the given scales
+     * when called, axis are rendered at the origin
+     * appy transforms to place the axis where they need to be
+     */
     const xAxis = axisBottom(x)
     const yAxis = axisLeft(y)
 
@@ -62,6 +67,12 @@ const Axis: React.FC = () => {
         if (!selection) {
             setSelection(select(svgRef.current))
         } else {
+            /**
+             * we need to call so we can pass in the current selection
+             * calling an axis will return the current seleciton
+             * i have separated the groups and put them into variables
+             * for readability
+             */
             const xAxisGroup = selection
                 .append('g')
                 .attr(
@@ -75,6 +86,7 @@ const Axis: React.FC = () => {
                 .append('g')
                 .attr('transform', `translate(${dimensions.marginLeft}, 0)`)
                 .call(yAxis)
+
             const charts = selection
                 .append('g')
                 .attr('transform', `translate(${dimensions.marginLeft}, 0)`)
@@ -85,6 +97,12 @@ const Axis: React.FC = () => {
                 .attr('width', x.bandwidth)
                 .attr('height', d => y(d.units))
                 .attr('x', d => x(d.name)!)
+                //translate the bars
+                .attr(
+                    'y',
+                    d =>
+                        dimensions.height - dimensions.marginBottom - y(d.units)
+                )
         }
     }, [selection])
     return (
