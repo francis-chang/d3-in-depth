@@ -5,6 +5,7 @@ import DataJoin from './components/DataJoin'
 import Enter from './components/Enter'
 import Scales from './components/Scales'
 import Group from './components/Groups'
+import Axis from './components/Axis'
 
 storiesOf('D3, React tutorial', module)
     .add('1 - selections', () => <Selection />)
@@ -12,3 +13,4 @@ storiesOf('D3, React tutorial', module)
     .add('2.5 - enter selection', () => <Enter />)
     .add('3 - scales', () => <Scales />)
     .add('4 - groups and margins', () => <Group />)
+    .add('5-Axis', () => <Axis />)
