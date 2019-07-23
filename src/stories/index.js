@@ -7,6 +7,7 @@ import Scales from './components/Scales'
 import Group from './components/Groups'
 import Axis from './components/Axis'
 import Update from './components/Update'
+import Transition from './components/Transition'
 
 storiesOf('D3, React tutorial', module)
     .add('1 - selections', () => <Selection />)
@@ -16,3 +17,4 @@ storiesOf('D3, React tutorial', module)
     .add('4 - groups and margins', () => <Group />)
     .add('5 - axis', () => <Axis />)
     .add('6 - update', () => <Update />)
+    .add('6.5 - transition', () => <Transition />)
