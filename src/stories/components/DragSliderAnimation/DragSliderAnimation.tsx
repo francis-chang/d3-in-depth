@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 // import { BaseType, Selection } from 'd3-selection';
 // import { scaleLinear } from 'd3-scale';
 // import { drag } from 'd3-drag';
@@ -12,28 +12,27 @@ const DragSlider2: React.FC = () => {
 
   const [moving, setMoving] = useState(false);
   const [currentValue, setCurrentValue] = useState(0);
-  // const [timer, setTimer] = useState(null);
 
   const [handle, setHandle] = useState(null);
-  const [x, setX] = useState(null);
 
   const margin = { right: 50, left: 50 };
+
+  const { width, height } = useMemo(() => {
+    if (!svg) {
+      return {};
+    }
+    return { width: +svg.attr('width') - margin.left - margin.right, height: +svg.attr('height') };
+  }, [svg]);
+
+  const x = useMemo(() => {
+    return d3.scaleLinear().domain([0, 180]).range([0, width]).clamp(true);
+  }, [svg]);
 
   useEffect(() => {
     if (!svg) {
       setSvg(d3.select(svgRef.current));
       return;
     }
-    // svg.append('rect').attr('width', 200).attr('height', 200).attr('fill', 'blue');
-
-    const width = +svg.attr('width') - margin.left - margin.right;
-    const height = +svg.attr('height');
-
-    const targetValue = width;
-    let currentValue = 0;
-
-    let x = d3.scaleLinear().domain([0, 180]).range([0, width]).clamp(true);
-    setX(() => x);
 
     let slider = svg
       .append('g')
