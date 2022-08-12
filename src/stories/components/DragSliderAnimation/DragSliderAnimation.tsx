@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 // import { BaseType, Selection } from 'd3-selection';
 // import { scaleLinear } from 'd3-scale';
 // import { drag } from 'd3-drag';
@@ -11,6 +11,7 @@ type Selection = d3.Selection<SVGSVGElement | null, unknown, null, undefined>;
 interface ISelections {
   handle: d3.Selection<SVGCircleElement, unknown, null, undefined>;
   label: d3.Selection<SVGTextElement, unknown, null, undefined>;
+  slider: d3.Selection<SVGGElement, unknown, null, undefined>;
 }
 
 const margin = { right: 50, left: 50 };
@@ -35,11 +36,16 @@ const DragSlider2: React.FC = () => {
     return d3.scaleLinear().domain([0, 180]).range([0, width]).clamp(true);
   }, [svg]);
 
-  const updateAnimation = ({ handle, label }: ISelections, h: number) => {
-    svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
-    handle.attr('cx', x(h));
-    label.attr('x', x(h)).text(Math.floor(h));
-  };
+  const updateAnimation = useCallback(
+    (h: number) => {
+      svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
+      if (!selections) return;
+
+      selections.handle.attr('cx', x(h));
+      selections.label.attr('x', x(h)).text(Math.floor(h));
+    },
+    [svg, selections]
+  );
 
   useEffect(() => {
     if (!svg) {
@@ -65,15 +71,7 @@ const DragSlider2: React.FC = () => {
       .select(function () {
         return this!.parentNode.appendChild(this.cloneNode(true));
       })
-      .attr('class', 'track-overlay')
-      .call(
-        d3.drag().on('drag', function (event) {
-          const me = d3.select(this);
-          update(x.invert(event.x));
-          setCurrentValue(x(x.invert(event.x)));
-          setMoving(false);
-        })
-      );
+      .attr('class', 'track-overlay');
 
     slider
       .insert('g', '.track-overlay')
@@ -109,14 +107,35 @@ const DragSlider2: React.FC = () => {
     //     };
     //   });
 
-    const update = (h: any) => {
-      updateAnimation({ handle, label }, h);
-    };
-
-    update(currentValue);
-
-    setSelections({ handle, label });
+    setSelections({ handle, label, slider });
   }, [svg]);
+
+  useEffect(() => {
+    if (!selections) return;
+
+    const { handle, label, slider } = selections;
+
+    slider.call(
+      d3.drag().on('drag', function (event) {
+        const me = d3.select(this);
+        updateAnimation(x.invert(event.x));
+        setCurrentValue(x(x.invert(event.x)));
+        setMoving(false);
+      })
+    );
+
+    // cool effect but remove for mow
+    // slider
+    // .transition() // Gratuitous intro!
+    // .duration(750)
+    // .tween('hue', function () {
+    //   var i = d3.interpolate(20, 0);
+    //   return function (t) {
+    //     updateAnimation(i(t));
+    //   };
+    // });
+    updateAnimation(0);
+  }, [selections]);
 
   useEffect(() => {
     if (!svg) return;
@@ -124,7 +143,7 @@ const DragSlider2: React.FC = () => {
     let timer = null;
 
     const update = (h: number) => {
-      updateAnimation(selections, h);
+      updateAnimation(h);
     };
 
     let currValInternal: number = currentValue;
