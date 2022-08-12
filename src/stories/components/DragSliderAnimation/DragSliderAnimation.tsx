@@ -11,7 +11,7 @@ const DragSlider2: React.FC = () => {
   const [svg, setSvg] = useState<null | d3.Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
 
   const [moving, setMoving] = useState(false);
-  // const [currentValue, setCurrentValue] = useState(0);
+  const [currentValue, setCurrentValue] = useState(0);
   const [timer, setTimer] = useState(null);
 
   const [handle, setHandle] = useState(null);
@@ -112,19 +112,20 @@ const DragSlider2: React.FC = () => {
       svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
     };
 
-    let currentValue: number = 0;
+    let currValInternal: number = currentValue;
     let targetValue = +svg.attr('width') - margin.left - margin.right;
 
     const step = () => {
       console.log('step');
-      update(x.invert(currentValue));
-      currentValue = currentValue + targetValue / 151;
-      if (currentValue > targetValue) {
+      update(x.invert(currValInternal));
+      currValInternal = currValInternal + targetValue / 151;
+      if (currValInternal > targetValue) {
         setMoving(false);
-        currentValue = 0;
+        currValInternal = 0;
         clearInterval(timer);
         console.log('Slider moving: ' + moving);
       }
+      setCurrentValue(currValInternal);
     };
 
     if (moving) {
