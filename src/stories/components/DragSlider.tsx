@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Selection } from 'd3-selection';
+// import { BaseType, Selection } from 'd3-selection';
 // import { scaleLinear } from 'd3-scale';
 // import { drag } from 'd3-drag';
 // import { interpolate } from 'd3-interpolate';
@@ -8,7 +8,7 @@ import './DragSlider.css';
 
 const DragSlider: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
-  const [svg, setSvg] = useState<null | Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
+  const [svg, setSvg] = useState<null | d3.Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
 
   useEffect(() => {
     if (!svg) {
@@ -33,17 +33,17 @@ const DragSlider: React.FC = () => {
         .attr('x1', x.range()[0])
         .attr('x2', x.range()[1])
         .select(function () {
-          return this!.parentNode.appendChild(this.cloneNode(true));
-        } as any)
+          // ToDo: fix any
+          return this!.parentNode.appendChild(this.cloneNode(true)) as any;
+        })
         .attr('class', 'track-inset')
         .select(function () {
           return this!.parentNode.appendChild(this.cloneNode(true));
-        } as any)
+        })
         .attr('class', 'track-overlay')
         .call(
           d3.drag().on('drag', function (event) {
             const me = d3.select(this);
-            console.log('DRAG!!!');
             hue(x.invert(event.x));
           })
         );
