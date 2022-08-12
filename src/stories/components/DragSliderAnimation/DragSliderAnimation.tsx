@@ -13,6 +13,8 @@ interface ISelections {
   label: d3.Selection<SVGTextElement, unknown, null, undefined>;
 }
 
+const margin = { right: 50, left: 50 };
+
 const DragSlider2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [svg, setSvg] = useState<null | Selection>(null);
@@ -20,12 +22,7 @@ const DragSlider2: React.FC = () => {
   const [moving, setMoving] = useState(false);
   const [currentValue, setCurrentValue] = useState(0);
 
-  // const [handle, setHandle] = useState(null);
-  // const [label, setLabel] = useState(null);
-
   const [selections, setSelections] = useState<ISelections>(null);
-
-  const margin = { right: 50, left: 50 };
 
   const { width, height } = useMemo(() => {
     if (!svg) {
@@ -145,8 +142,6 @@ const DragSlider2: React.FC = () => {
     if (moving) {
       timer = setInterval(step, 100);
       console.log('set interval');
-    } else {
-      clearInterval(timer);
     }
     return () => {
       clearInterval(timer);
