@@ -23,7 +23,7 @@ const DragSlider2: React.FC = () => {
   const [svg, setSvg] = useState<null | Selection>(null);
 
   const [moving, setMoving] = useState(false);
-  const [currentValue, setCurrentValue] = useState(0);
+  const [timeValue, setTimeValue] = useState(0);
 
   const [selections, setSelections] = useState<ISelections>(null);
 
@@ -38,26 +38,17 @@ const DragSlider2: React.FC = () => {
     return d3.scaleLinear().domain([0, maxXVal]).range([0, width]).clamp(true);
   }, [svg]);
 
-  // const updateAnimation = useCallback(
-  //   (h: number) => {
-  //     if (!svg) return;
-  //     svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
-  //     if (!selections) return;
-
-  //     selections.handle.attr('cx', x(h));
-  //     selections.label.attr('x', x(h)).text(Math.floor(h));
-  //   },
-  //   [svg, selections]
-  // );
-
-  useEffect(() => {
-    if (!svg) return;
-    svg.style('background-color', d3.hsl(currentValue, 0.8, 0.8) as any);
-    if (!selections) return;
-
-    selections.handle.attr('cx', x(currentValue));
-    selections.label.attr('x', x(currentValue)).text(Math.floor(currentValue));
-  }, [svg, currentValue, selections]);
+  const updateAnimation = useCallback(
+    (newTimeValue: number) => {
+      if (!svg) return;
+      svg.style('background-color', d3.hsl(newTimeValue, 0.8, 0.8) as any);
+      if (!selections) return;
+      selections.handle.attr('cx', x(newTimeValue));
+      selections.label.attr('x', x(newTimeValue)).text(Math.floor(newTimeValue));
+      setTimeValue(newTimeValue);
+    },
+    [svg, selections]
+  );
 
   useEffect(() => {
     if (!svg) {
@@ -120,7 +111,7 @@ const DragSlider2: React.FC = () => {
       d3.drag().on('drag', function (event) {
         const me = d3.select(this);
         // ToDo: not sure why i need to substract the margin
-        setCurrentValue(x.invert(event.x - margin.left));
+        updateAnimation(x.invert(event.x - margin.left));
         setMoving(false);
       })
     );
@@ -132,10 +123,10 @@ const DragSlider2: React.FC = () => {
     //   .tween('hue', function () {
     //     var i = d3.interpolate(20, 0);
     //     return function (t) {
-    //       setCurrentValue(i(t));
+    //       updateAnimation(i(t));
     //     };
     //   });
-    setCurrentValue(0);
+    updateAnimation(0);
   }, [selections]);
 
   useEffect(() => {
@@ -143,7 +134,7 @@ const DragSlider2: React.FC = () => {
 
     let timer = null;
 
-    let currValInternal: number = currentValue;
+    let currValInternal: number = timeValue;
     let targetValue = +svg.attr('width') - margin.left - margin.right;
 
     const step = () => {
@@ -156,7 +147,7 @@ const DragSlider2: React.FC = () => {
         clearInterval(timer);
         console.log('Slider moving: ' + moving);
       }
-      setCurrentValue(currValInternal);
+      updateAnimation(currValInternal);
     };
 
     if (moving) {
