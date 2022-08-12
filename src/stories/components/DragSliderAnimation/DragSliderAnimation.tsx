@@ -58,6 +58,8 @@ const DragSlider2: React.FC = () => {
         d3.drag().on('drag', function (event) {
           const me = d3.select(this);
           hue(x.invert(event.x));
+          setCurrentValue(x(x.invert(event.x)));
+          setMoving(false);
         })
       );
 
