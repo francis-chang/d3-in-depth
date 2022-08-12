@@ -16,7 +16,7 @@ interface ISelections {
 
 const margin = { right: 50, left: 50 };
 
-const maxXVal = 180;
+const maxTimeValue = 180;
 
 const DragSlider2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
@@ -35,7 +35,7 @@ const DragSlider2: React.FC = () => {
   }, [svg]);
 
   const x = useMemo(() => {
-    return d3.scaleLinear().domain([0, maxXVal]).range([0, width]).clamp(true);
+    return d3.scaleLinear().domain([0, maxTimeValue]).range([0, width]).clamp(true);
   }, [svg]);
 
   const updateAnimation = useCallback(
@@ -141,7 +141,7 @@ const DragSlider2: React.FC = () => {
       console.log('step');
 
       currValInternal = currValInternal + targetValue / 300;
-      if (currValInternal > maxXVal) {
+      if (currValInternal > maxTimeValue) {
         setMoving(false);
         currValInternal = 0;
         clearInterval(timer);
