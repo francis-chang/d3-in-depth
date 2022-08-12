@@ -6,14 +6,17 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import * as d3 from 'd3';
 import './DragSliderAnimation.css';
 
+type Selection = d3.Selection<SVGSVGElement | null, unknown, null, undefined>;
+
 const DragSlider2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
-  const [svg, setSvg] = useState<null | d3.Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
+  const [svg, setSvg] = useState<null | Selection>(null);
 
   const [moving, setMoving] = useState(false);
   const [currentValue, setCurrentValue] = useState(0);
 
   const [handle, setHandle] = useState(null);
+  const [label, setLabel] = useState(null);
 
   const margin = { right: 50, left: 50 };
 
@@ -76,16 +79,18 @@ const DragSlider2: React.FC = () => {
         return d;
       });
 
-    const handleInternal = slider.insert('circle', '.track-overlay').attr('class', 'handle').attr('r', 9);
+    const d3Handle = slider.insert('circle', '.track-overlay').attr('class', 'handle').attr('r', 9);
 
-    setHandle(handleInternal);
+    setHandle(d3Handle);
 
-    var label = slider
+    var d3Label = slider
       .append('text')
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .text('0')
       .attr('transform', 'translate(0,' + -25 + ')');
+
+    setLabel(d3Label);
 
     slider
       .transition() // Gratuitous intro!
@@ -98,8 +103,8 @@ const DragSlider2: React.FC = () => {
       });
 
     const hue = (h: any) => {
-      handleInternal.attr('cx', x(h));
-      label.attr('x', x(h)).text(Math.floor(h));
+      d3Handle.attr('cx', x(h));
+      d3Label.attr('x', x(h)).text(Math.floor(h));
       svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
     };
   }, [svg]);
@@ -112,6 +117,7 @@ const DragSlider2: React.FC = () => {
     const update = (h: number) => {
       // update position and text of label according to slider scale
       handle.attr('cx', x(h));
+      label.attr('x', x(h)).text(Math.floor(h));
       svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
     };
 
