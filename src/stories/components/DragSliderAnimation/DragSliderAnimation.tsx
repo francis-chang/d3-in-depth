@@ -119,22 +119,22 @@ const DragSlider2: React.FC = () => {
     slider.call(
       d3.drag().on('drag', function (event) {
         const me = d3.select(this);
-
-        setCurrentValue(x.invert(event.x));
+        // ToDo: not sure why i need to substract the margin
+        setCurrentValue(x.invert(event.x - margin.left));
         setMoving(false);
       })
     );
 
     // cool effect but remove for mow
     // slider
-    // .transition() // Gratuitous intro!
-    // .duration(750)
-    // .tween('hue', function () {
-    //   var i = d3.interpolate(20, 0);
-    //   return function (t) {
-    //     updateAnimation(i(t));
-    //   };
-    // });
+    //   .transition() // Gratuitous intro!
+    //   .duration(750)
+    //   .tween('hue', function () {
+    //     var i = d3.interpolate(20, 0);
+    //     return function (t) {
+    //       setCurrentValue(i(t));
+    //     };
+    //   });
     setCurrentValue(0);
   }, [selections]);
 
