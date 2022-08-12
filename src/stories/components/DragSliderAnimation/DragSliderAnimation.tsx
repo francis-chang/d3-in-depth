@@ -96,17 +96,6 @@ const DragSlider2: React.FC = () => {
       .text('0')
       .attr('transform', 'translate(0,' + -25 + ')');
 
-    // cool effect but remove for mow
-    // slider
-    //   .transition() // Gratuitous intro!
-    //   .duration(750)
-    //   .tween('hue', function () {
-    //     var i = d3.interpolate(10, 0);
-    //     return function (t) {
-    //       hue(i(t));
-    //     };
-    //   });
-
     setSelections({ handle, label, slider });
   }, [svg]);
 
@@ -142,16 +131,12 @@ const DragSlider2: React.FC = () => {
 
     let timer = null;
 
-    const update = (h: number) => {
-      updateAnimation(h);
-    };
-
     let currValInternal: number = currentValue;
     let targetValue = +svg.attr('width') - margin.left - margin.right;
 
     const step = () => {
       console.log('step');
-      update(x.invert(currValInternal));
+      updateAnimation(x.invert(currValInternal));
       currValInternal = currValInternal + targetValue / 151;
       if (currValInternal > targetValue) {
         setMoving(false);
