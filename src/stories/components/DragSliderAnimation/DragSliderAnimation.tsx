@@ -16,6 +16,8 @@ interface ISelections {
 
 const margin = { right: 50, left: 50 };
 
+const maxXVal = 180;
+
 const DragSlider2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [svg, setSvg] = useState<null | Selection>(null);
@@ -33,19 +35,29 @@ const DragSlider2: React.FC = () => {
   }, [svg]);
 
   const x = useMemo(() => {
-    return d3.scaleLinear().domain([0, 180]).range([0, width]).clamp(true);
+    return d3.scaleLinear().domain([0, maxXVal]).range([0, width]).clamp(true);
   }, [svg]);
 
-  const updateAnimation = useCallback(
-    (h: number) => {
-      svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
-      if (!selections) return;
+  // const updateAnimation = useCallback(
+  //   (h: number) => {
+  //     if (!svg) return;
+  //     svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
+  //     if (!selections) return;
 
-      selections.handle.attr('cx', x(h));
-      selections.label.attr('x', x(h)).text(Math.floor(h));
-    },
-    [svg, selections]
-  );
+  //     selections.handle.attr('cx', x(h));
+  //     selections.label.attr('x', x(h)).text(Math.floor(h));
+  //   },
+  //   [svg, selections]
+  // );
+
+  useEffect(() => {
+    if (!svg) return;
+    svg.style('background-color', d3.hsl(currentValue, 0.8, 0.8) as any);
+    if (!selections) return;
+
+    selections.handle.attr('cx', x(currentValue));
+    selections.label.attr('x', x(currentValue)).text(Math.floor(currentValue));
+  }, [svg, currentValue, selections]);
 
   useEffect(() => {
     if (!svg) {
@@ -107,8 +119,8 @@ const DragSlider2: React.FC = () => {
     slider.call(
       d3.drag().on('drag', function (event) {
         const me = d3.select(this);
-        updateAnimation(x.invert(event.x));
-        setCurrentValue(x(x.invert(event.x)));
+
+        setCurrentValue(x.invert(event.x));
         setMoving(false);
       })
     );
@@ -123,7 +135,7 @@ const DragSlider2: React.FC = () => {
     //     updateAnimation(i(t));
     //   };
     // });
-    updateAnimation(0);
+    setCurrentValue(0);
   }, [selections]);
 
   useEffect(() => {
@@ -136,9 +148,9 @@ const DragSlider2: React.FC = () => {
 
     const step = () => {
       console.log('step');
-      updateAnimation(x.invert(currValInternal));
-      currValInternal = currValInternal + targetValue / 151;
-      if (currValInternal > targetValue) {
+
+      currValInternal = currValInternal + targetValue / 300;
+      if (currValInternal > maxXVal) {
         setMoving(false);
         currValInternal = 0;
         clearInterval(timer);
