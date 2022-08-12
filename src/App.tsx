@@ -6,7 +6,7 @@ import Transition from './stories/components/Transition';
 
 const App: React.FC = () => (
   <h1>
-    <TimeNetwork2 />
+    <TimeNetwork />
   </h1>
 );
 

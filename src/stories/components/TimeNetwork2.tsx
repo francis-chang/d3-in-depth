@@ -27,11 +27,9 @@ const TimeNetwork2: React.FC = () => {
     if (!selection) {
       setSelection(select(svgRef.current));
     } else {
-      selection
-        .append('rect')
-        .attr('width', (d) => 100)
-        .attr('height', (d) => 100)
-        .attr('fill', (d) => 'blue');
+      selection.append('rect').attr('width', 200).attr('height', 200).attr('fill', 'blue');
+
+      selection.append('rect').attr('width', 100).attr('height', 100).attr('fill', 'blue');
     }
   }, [selection]);
   return (
