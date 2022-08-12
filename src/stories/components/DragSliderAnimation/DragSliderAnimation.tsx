@@ -8,6 +8,11 @@ import './DragSliderAnimation.css';
 
 type Selection = d3.Selection<SVGSVGElement | null, unknown, null, undefined>;
 
+interface ISelections {
+  handle: d3.Selection<SVGCircleElement, unknown, null, undefined>;
+  label: d3.Selection<SVGTextElement, unknown, null, undefined>;
+}
+
 const DragSlider2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [svg, setSvg] = useState<null | Selection>(null);
@@ -15,8 +20,10 @@ const DragSlider2: React.FC = () => {
   const [moving, setMoving] = useState(false);
   const [currentValue, setCurrentValue] = useState(0);
 
-  const [handle, setHandle] = useState(null);
-  const [label, setLabel] = useState(null);
+  // const [handle, setHandle] = useState(null);
+  // const [label, setLabel] = useState(null);
+
+  const [selections, setSelections] = useState<ISelections>(null);
 
   const margin = { right: 50, left: 50 };
 
@@ -30,6 +37,12 @@ const DragSlider2: React.FC = () => {
   const x = useMemo(() => {
     return d3.scaleLinear().domain([0, 180]).range([0, width]).clamp(true);
   }, [svg]);
+
+  const updateAnimation = ({ handle, label }: ISelections, h: number) => {
+    svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
+    handle.attr('cx', x(h));
+    label.attr('x', x(h)).text(Math.floor(h));
+  };
 
   useEffect(() => {
     if (!svg) {
@@ -79,18 +92,14 @@ const DragSlider2: React.FC = () => {
         return d;
       });
 
-    const d3Handle = slider.insert('circle', '.track-overlay').attr('class', 'handle').attr('r', 9);
+    const handle = slider.insert('circle', '.track-overlay').attr('class', 'handle').attr('r', 9);
 
-    setHandle(d3Handle);
-
-    var d3Label = slider
+    var label = slider
       .append('text')
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .text('0')
       .attr('transform', 'translate(0,' + -25 + ')');
-
-    setLabel(d3Label);
 
     slider
       .transition() // Gratuitous intro!
@@ -103,10 +112,9 @@ const DragSlider2: React.FC = () => {
       });
 
     const hue = (h: any) => {
-      d3Handle.attr('cx', x(h));
-      d3Label.attr('x', x(h)).text(Math.floor(h));
-      svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
+      updateAnimation({ handle, label }, h);
     };
+    setSelections({ handle, label });
   }, [svg]);
 
   useEffect(() => {
@@ -115,10 +123,7 @@ const DragSlider2: React.FC = () => {
     let timer = null;
 
     const update = (h: number) => {
-      // update position and text of label according to slider scale
-      handle.attr('cx', x(h));
-      label.attr('x', x(h)).text(Math.floor(h));
-      svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
+      updateAnimation(selections, h);
     };
 
     let currValInternal: number = currentValue;
