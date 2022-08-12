@@ -19,7 +19,7 @@ const data = [
   },
 ];
 
-const Enter: React.FC = () => {
+const TimeNetwork2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [selection, setSelection] = useState<null | Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
 
@@ -27,11 +27,9 @@ const Enter: React.FC = () => {
     if (!selection) {
       setSelection(select(svgRef.current));
     } else {
-      selection
-        .append('rect')
-        .attr('width', (d) => 100)
-        .attr('height', (d) => 100)
-        .attr('fill', (d) => 'blue');
+      selection.append('rect').attr('width', 200).attr('height', 200).attr('fill', 'blue');
+
+      selection.append('rect').attr('width', 100).attr('height', 100).attr('fill', 'blue');
     }
   }, [selection]);
   return (
@@ -41,4 +39,4 @@ const Enter: React.FC = () => {
   );
 };
 
-export default Enter;
+export default TimeNetwork2;
