@@ -10,6 +10,10 @@ const DragSlider2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [svg, setSvg] = useState<null | d3.Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
 
+  const [moving, setMoving] = useState(false);
+  // const [currentValue, setCurrentValue] = useState(0);
+  const [timer, setTimer] = useState(null);
+
   useEffect(() => {
     if (!svg) {
       setSvg(d3.select(svgRef.current));
@@ -19,6 +23,9 @@ const DragSlider2: React.FC = () => {
       const margin = { right: 50, left: 50 };
       const width = +svg.attr('width') - margin.left - margin.right;
       const height = +svg.attr('height');
+
+      const targetValue = width;
+      let currentValue = 0;
 
       let x = d3.scaleLinear().domain([0, 180]).range([0, width]).clamp(true);
 
@@ -59,14 +66,23 @@ const DragSlider2: React.FC = () => {
         .attr('x', x)
         .attr('text-anchor', 'middle')
         .text(function (d) {
-          return d + '°';
+          return d;
         });
+
+      const handle = slider.insert('circle', '.track-overlay').attr('class', 'handle').attr('r', 9);
+
+      var label = slider
+        .append('text')
+        .attr('class', 'label')
+        .attr('text-anchor', 'middle')
+        .text('0')
+        .attr('transform', 'translate(0,' + -25 + ')');
 
       slider
         .transition() // Gratuitous intro!
         .duration(750)
         .tween('hue', function () {
-          var i = d3.interpolate(0, 70);
+          var i = d3.interpolate(0, 0);
           return function (t) {
             hue(i(t));
           };
@@ -74,15 +90,45 @@ const DragSlider2: React.FC = () => {
 
       const hue = (h: any) => {
         handle.attr('cx', x(h));
+        label.attr('x', x(h)).text(Math.floor(h));
         svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
       };
 
-      let handle = slider.insert('circle', '.track-overlay').attr('class', 'handle').attr('r', 9);
+      const step = () => {
+        console.log('step');
+        update(x.invert(currentValue));
+        currentValue = currentValue + targetValue / 151;
+        if (currentValue > targetValue) {
+          setMoving(false);
+          currentValue = 0;
+          clearInterval(timer);
+          console.log('Slider moving: ' + moving);
+        }
+      };
+
+      const update = (h: number) => {
+        // update position and text of label according to slider scale
+        handle.attr('cx', x(h));
+        label.attr('x', x(h)).text(Math.floor(h));
+        svg.style('background-color', d3.hsl(h, 0.8, 0.8) as any);
+      };
+
+      if (moving) {
+        setInterval(step, 100);
+        console.log('set interval');
+      }
     }
-  }, [svg]);
+  }, [svg, moving]);
   return (
     <div>
       <svg ref={svgRef} width='960' height='500'></svg>
+      <button
+        id='play-button'
+        onClick={() => {
+          setMoving((prevValue) => !prevValue);
+        }}>
+        {moving ? 'Pause' : 'Play'}
+      </button>
     </div>
   );
 };

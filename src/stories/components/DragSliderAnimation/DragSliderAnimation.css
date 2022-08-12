@@ -1,5 +1,11 @@
+body {
+  font-family:"avenir next", Arial, sans-serif;
+  font-size: 12px;
+  color: #696969;
+}
+
 .ticks {
-  font: 10px sans-serif;
+  font-size: 10px;
 }
 
 .track,
@@ -15,7 +21,7 @@
 }
 
 .track-inset {
-  stroke: #ddd;
+  stroke: #dcdcdc;
   stroke-width: 8px;
 }
 
@@ -32,3 +38,23 @@
   stroke-opacity: 0.5;
   stroke-width: 1.25px;
 }
+
+#play-button {
+  position: absolute;
+  top: 140px;
+  left: 50px;
+  background: #f08080;
+  padding-right: 26px;
+  border-radius: 3px;
+  border: none;
+  color: white;
+  margin: 0;
+  padding: 0 12px;
+  width: 60px;
+  cursor: pointer;
+  height: 30px;
+}
+
+#play-button:hover {
+  background-color: #696969;
+}    
