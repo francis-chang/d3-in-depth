@@ -19,7 +19,7 @@ const data = [
   },
 ];
 
-const Enter: React.FC = () => {
+const TimeNetwork2: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [selection, setSelection] = useState<null | Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
 
@@ -41,4 +41,4 @@ const Enter: React.FC = () => {
   );
 };
 
-export default Enter;
+export default TimeNetwork2;
