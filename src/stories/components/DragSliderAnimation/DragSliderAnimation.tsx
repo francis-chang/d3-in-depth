@@ -69,7 +69,7 @@ const DragSlider2: React.FC = () => {
       .call(
         d3.drag().on('drag', function (event) {
           const me = d3.select(this);
-          hue(x.invert(event.x));
+          update(x.invert(event.x));
           setCurrentValue(x(x.invert(event.x)));
           setMoving(false);
         })
@@ -98,19 +98,23 @@ const DragSlider2: React.FC = () => {
       .text('0')
       .attr('transform', 'translate(0,' + -25 + ')');
 
-    slider
-      .transition() // Gratuitous intro!
-      .duration(750)
-      .tween('hue', function () {
-        var i = d3.interpolate(0, 0);
-        return function (t) {
-          hue(i(t));
-        };
-      });
+    // cool effect but remove for mow
+    // slider
+    //   .transition() // Gratuitous intro!
+    //   .duration(750)
+    //   .tween('hue', function () {
+    //     var i = d3.interpolate(10, 0);
+    //     return function (t) {
+    //       hue(i(t));
+    //     };
+    //   });
 
-    const hue = (h: any) => {
+    const update = (h: any) => {
       updateAnimation({ handle, label }, h);
     };
+
+    update(currentValue);
+
     setSelections({ handle, label });
   }, [svg]);
 
