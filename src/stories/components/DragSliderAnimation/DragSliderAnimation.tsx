@@ -12,7 +12,7 @@ const DragSlider2: React.FC = () => {
 
   const [moving, setMoving] = useState(false);
   // const [currentValue, setCurrentValue] = useState(0);
-  // const [timer, setTimer] = useState(null);
+  const [timer, setTimer] = useState(null);
 
   const [handle, setHandle] = useState(null);
   const [x, setX] = useState(null);
@@ -114,7 +114,6 @@ const DragSlider2: React.FC = () => {
 
     let currentValue: number = 0;
     let targetValue = +svg.attr('width') - margin.left - margin.right;
-    let timer = null;
 
     const step = () => {
       console.log('step');
@@ -129,11 +128,11 @@ const DragSlider2: React.FC = () => {
     };
 
     if (moving) {
-      timer = setInterval(step, 100);
+      setTimer(setInterval(step, 100));
       console.log('set interval');
     } else {
       clearInterval(timer);
-      timer = null;
+      setTimer(null);
     }
   }, [moving]);
 
