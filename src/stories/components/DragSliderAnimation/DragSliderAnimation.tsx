@@ -18,7 +18,7 @@ const margin = { right: 50, left: 50 };
 
 const maxTimeValue = 180;
 
-const DragSlider2: React.FC = () => {
+const DragSliderAnimation: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [svg, setSvg] = useState<null | Selection>(null);
 
@@ -173,4 +173,4 @@ const DragSlider2: React.FC = () => {
   );
 };
 
-export default DragSlider2;
+export default DragSliderAnimation;
