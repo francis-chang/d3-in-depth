@@ -50,6 +50,7 @@ const DragSliderAnimation: React.FC = () => {
     [svg, selections]
   );
 
+  // Draw initial d3
   useEffect(() => {
     if (!svg) {
       setSvg(d3.select(svgRef.current));
@@ -102,6 +103,7 @@ const DragSliderAnimation: React.FC = () => {
     setSelections({ handle, label, slider });
   }, [svg]);
 
+  // Add drag handler
   useEffect(() => {
     if (!selections) return;
 
@@ -129,6 +131,7 @@ const DragSliderAnimation: React.FC = () => {
     updateAnimation(0);
   }, [selections]);
 
+  // Step time when moving
   useEffect(() => {
     if (!svg) return;
 
