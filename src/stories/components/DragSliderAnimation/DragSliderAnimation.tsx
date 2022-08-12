@@ -114,8 +114,11 @@ const DragSlider2: React.FC = () => {
       };
 
       if (moving) {
-        setInterval(step, 100);
+        setTimer(setInterval(step, 100));
         console.log('set interval');
+      } else {
+        clearInterval(timer);
+        setTimer(null);
       }
     }
   }, [svg, moving]);
