@@ -12,7 +12,7 @@ const DragSlider2: React.FC = () => {
 
   const [moving, setMoving] = useState(false);
   const [currentValue, setCurrentValue] = useState(0);
-  const [timer, setTimer] = useState(null);
+  // const [timer, setTimer] = useState(null);
 
   const [handle, setHandle] = useState(null);
   const [x, setX] = useState(null);
@@ -108,6 +108,8 @@ const DragSlider2: React.FC = () => {
   useEffect(() => {
     if (!svg) return;
 
+    let timer = null;
+
     const update = (h: number) => {
       // update position and text of label according to slider scale
       handle.attr('cx', x(h));
@@ -131,12 +133,14 @@ const DragSlider2: React.FC = () => {
     };
 
     if (moving) {
-      setTimer(setInterval(step, 100));
+      timer = setInterval(step, 100);
       console.log('set interval');
     } else {
       clearInterval(timer);
-      setTimer(null);
     }
+    return () => {
+      clearInterval(timer);
+    };
   }, [moving]);
 
   return (
