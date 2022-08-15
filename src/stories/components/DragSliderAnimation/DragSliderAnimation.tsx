@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 // import { BaseType, Selection } from 'd3-selection';
 // import { scaleLinear } from 'd3-scale';
@@ -169,7 +170,8 @@ const DragSliderAnimation: React.FC = () => {
         id='play-button'
         onClick={() => {
           setMoving((prevValue) => !prevValue);
-        }}>
+        }}
+      >
         {moving ? 'Pause' : 'Play'}
       </button>
     </div>

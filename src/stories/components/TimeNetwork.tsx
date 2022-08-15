@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, { useRef, useEffect, useState } from 'react';
 import { event, select, Selection } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
