@@ -1,18 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useRef, useEffect, useState } from 'react';
-import { event, select, Selection } from 'd3-selection';
-import { scaleLinear } from 'd3-scale';
-import { range } from 'd3-array';
-import { drag } from 'd3-drag';
-import { json, map } from 'd3';
+
+import * as d3 from 'd3';
 
 const TimeNetwork: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
-  const [selection, setSelection] = useState<null | Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
+  const [selection, setSelection] = useState<null | d3.Selection<SVGSVGElement | null, unknown, null, undefined>>(null);
 
   useEffect(() => {
     if (!selection) {
-      setSelection(select(svgRef.current));
+      setSelection(d3.select(svgRef.current));
     } else {
       console.log('DRAW!');
 
@@ -34,7 +31,8 @@ const TimeNetwork: React.FC = () => {
       var slider_size = 0.75 * width;
       var left_margin = 0.5 * (width - slider_size);
 
-      var x = scaleLinear()
+      var x = d3
+        .scaleLinear()
         .domain([0, 10])
         .range([left_margin, slider_size + left_margin])
         .clamp(true);
@@ -53,18 +51,19 @@ const TimeNetwork: React.FC = () => {
         })
         .attr('class', 'track-overlay')
         .call(
-          drag()
+          d3
+            .drag()
             .on('start.interrupt', function () {
               slider.interrupt();
             })
             .on('start drag', function () {
-              return hue(x.invert(event.x));
+              return hue(x.invert(d3.event.x));
             }) as any
         );
 
-      var years = range(2010, 2016, 1);
+      var years = d3.range(2010, 2016, 1);
       var dx = L / (years.length - 1);
-      var xticks = range(0, L + dx, dx);
+      var xticks = d3.range(0, L + dx, dx);
 
       slider
         .insert('g', '.track-overlay')
@@ -93,8 +92,8 @@ const TimeNetwork: React.FC = () => {
       };
 
       const dragged = (d: any) => {
-        d.fx = event.x;
-        d.fy = event.y;
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
       };
 
       const dragended = (d: any) => {
