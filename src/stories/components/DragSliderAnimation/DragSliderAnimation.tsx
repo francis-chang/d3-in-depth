@@ -9,11 +9,12 @@ import './DragSliderAnimation.css';
 import useInterval from 'src/hooks/useInterval';
 
 type Selection = d3.Selection<SVGSVGElement | null, unknown, null, undefined>;
+type TSelection<T extends d3.BaseType> = d3.Selection<T | null, unknown, null, undefined>;
 
 interface ISelections {
-  handle: d3.Selection<SVGCircleElement, unknown, null, undefined>;
-  label: d3.Selection<SVGTextElement, unknown, null, undefined>;
-  slider: d3.Selection<SVGGElement, unknown, null, undefined>;
+  handle: TSelection<SVGCircleElement>;
+  label: TSelection<SVGTextElement>;
+  slider: TSelection<SVGGElement>;
 }
 
 const margin = { right: 50, left: 50 };
@@ -59,65 +60,68 @@ const DragSliderAnimation: React.FC = () => {
       return;
     }
 
+    // let rect = svg.selectAll('.myRect').join('rect').attr('class', 'myRect').attr('width', 10).attr('height', 10).attr('fill', 'red');
+
     let slider = svg
-      .append('g')
-      .attr('class', 'slider')
-      .attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')');
+      .selectAll('.slider')
+      .data([''])
+      .join('g')
+      .attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')') as d3.Selection<SVGGElement, unknown, null, undefined>;
+
+    slider.selectAll('.track').data(['']).join('line').attr('class', 'track').attr('x1', x.range()[0]).attr('x2', x.range()[1]);
+    slider.selectAll('.track-inset').data(['']).join('line').attr('class', 'track-inset').attr('x1', x.range()[0]).attr('x2', x.range()[1]);
+    slider.selectAll('.track-overlay').data(['']).join('line').attr('class', 'track-overlay').attr('x1', x.range()[0]).attr('x2', x.range()[1]);
+
+    // .select(function () {
+    //   // ToDo: fix any
+    //   return (this as any)!.parentNode.appendChild((this as any)!.cloneNode(true)) as any;
+    // })
+    // .attr('class', 'track-inset')
+    // .select(function () {
+    //   return (this as any)!.parentNode.appendChild((this as any)!.cloneNode(true));
+    // })
+    // .attr('class', 'track-overlay');
 
     slider
-      .append('line')
-      .attr('class', 'track')
-      .attr('x1', x.range()[0])
-      .attr('x2', x.range()[1])
-      .select(function () {
-        // ToDo: fix any
-        return this!.parentNode.appendChild(this.cloneNode(true)) as any;
-      })
-      .attr('class', 'track-inset')
-      .select(function () {
-        return this!.parentNode.appendChild(this.cloneNode(true));
-      })
-      .attr('class', 'track-overlay');
-
-    slider
-      .insert('g', '.track-overlay')
+      .selectAll('.ticks')
+      .data([''])
+      .join('g')
       .attr('class', 'ticks')
       .attr('transform', 'translate(0,' + 18 + ')')
       .selectAll('text')
       .data(x.ticks(10))
-      .enter()
-      .append('text')
+      .join('text')
       .attr('x', x)
       .attr('text-anchor', 'middle')
       .text(function (d) {
         return d;
       });
 
-    const handle = slider.insert('circle', '.track-overlay').attr('class', 'handle').attr('r', 9);
+    // const handle = slider.insert('circle').attr('class', 'handle').attr('r', 9);
+
+    const handle = slider.selectAll('.handle').data(['']).join('circle').attr('class', 'handle').attr('r', 9) as TSelection<SVGCircleElement>;
 
     var label = slider
-      .append('text')
+      .selectAll('.label')
+      .data([''])
+      .join('text')
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .text('0')
-      .attr('transform', 'translate(0,' + -25 + ')');
+      .attr('transform', 'translate(0,' + -25 + ')') as TSelection<SVGTextElement>;
 
     setSelections({ handle, label, slider });
-
-    return () => {
-      slider.remove();
-    };
   }, [svg]);
 
   // Add drag handler
   useEffect(() => {
     if (!selections) return;
 
-    const { handle, label, slider } = selections;
+    const { slider } = selections;
 
     slider.call(
       d3.drag().on('drag', function (event) {
-        const me = d3.select(this);
+        // const me = d3.select(this);
         // ToDo: not sure why i need to substract the margin
         updateAnimation(x.invert(event.x - margin.left));
         setMoving(false);
@@ -188,7 +192,9 @@ const DragSliderAnimation: React.FC = () => {
 
   return (
     <div>
-      <svg ref={svgRef} width='960' height='500'></svg>
+      <svg ref={svgRef} width='960' height='500'>
+        {/* <g className='slider'></g> */}
+      </svg>
       <button
         id='play-button'
         onClick={() => {
