@@ -101,16 +101,14 @@ const DragSliderAnimation: React.FC = () => {
 
   useInterval(() => {
     if (moving) {
-      let currValInternal: number = timeValue;
-
-      currValInternal = currValInternal + width / 300;
-      if (currValInternal > maxTimeValue) {
+      let newTimeVal: number = timeValue + width / 300;
+      if (newTimeVal > maxTimeValue) {
         setMoving(false);
-        currValInternal = 0;
+        newTimeVal = 0;
 
         console.log('Slider moving: ' + moving);
       }
-      updateAnimation(currValInternal);
+      updateAnimation(newTimeVal);
     }
   }, 100);
 
