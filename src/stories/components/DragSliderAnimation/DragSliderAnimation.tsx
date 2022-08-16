@@ -8,13 +8,12 @@ import * as d3 from 'd3';
 import './DragSliderAnimation.css';
 import useInterval from 'src/hooks/useInterval';
 
-type Selection = d3.Selection<SVGSVGElement | null, unknown, null, undefined>;
-type TSelection<T extends d3.BaseType> = d3.Selection<T | null, unknown, null, undefined>;
+type Selection<T extends d3.BaseType = SVGSVGElement> = d3.Selection<T | null, unknown, null, undefined>;
 
 interface ISelections {
-  handle: TSelection<SVGCircleElement>;
-  label: TSelection<SVGTextElement>;
-  slider: TSelection<SVGGElement>;
+  handle: Selection<SVGCircleElement>;
+  label: Selection<SVGTextElement>;
+  slider: Selection<SVGGElement>;
 }
 
 const margin = { right: 50, left: 50 };
@@ -30,6 +29,7 @@ const DragSliderAnimation: React.FC = () => {
 
   const [selections, setSelections] = useState<ISelections>(null);
 
+  // ToDo: move memos to hook
   const { width, height } = useMemo(() => {
     if (!svg) {
       return {};
@@ -60,27 +60,20 @@ const DragSliderAnimation: React.FC = () => {
       return;
     }
 
-    // let rect = svg.selectAll('.myRect').join('rect').attr('class', 'myRect').attr('width', 10).attr('height', 10).attr('fill', 'red');
-
-    let slider = svg
+    const slider = svg
       .selectAll('.slider')
       .data([''])
       .join('g')
-      .attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')') as d3.Selection<SVGGElement, unknown, null, undefined>;
+      .attr('class', 'slider')
+      .attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')') as Selection<SVGGElement>;
 
-    slider.selectAll('.track').data(['']).join('line').attr('class', 'track').attr('x1', x.range()[0]).attr('x2', x.range()[1]);
-    slider.selectAll('.track-inset').data(['']).join('line').attr('class', 'track-inset').attr('x1', x.range()[0]).attr('x2', x.range()[1]);
-    slider.selectAll('.track-overlay').data(['']).join('line').attr('class', 'track-overlay').attr('x1', x.range()[0]).attr('x2', x.range()[1]);
-
-    // .select(function () {
-    //   // ToDo: fix any
-    //   return (this as any)!.parentNode.appendChild((this as any)!.cloneNode(true)) as any;
-    // })
-    // .attr('class', 'track-inset')
-    // .select(function () {
-    //   return (this as any)!.parentNode.appendChild((this as any)!.cloneNode(true));
-    // })
-    // .attr('class', 'track-overlay');
+    slider
+      .selectAll('.track-lines')
+      .data(['track', 'track-inset', 'track-overlay'])
+      .join('line')
+      .attr('class', (d) => `track-lines ${d}`)
+      .attr('x1', x.range()[0])
+      .attr('x2', x.range()[1]);
 
     slider
       .selectAll('.ticks')
@@ -97,9 +90,7 @@ const DragSliderAnimation: React.FC = () => {
         return d;
       });
 
-    // const handle = slider.insert('circle').attr('class', 'handle').attr('r', 9);
-
-    const handle = slider.selectAll('.handle').data(['']).join('circle').attr('class', 'handle').attr('r', 9) as TSelection<SVGCircleElement>;
+    const handle = slider.selectAll('.handle').data(['']).join('circle').attr('class', 'handle').attr('r', 9) as Selection<SVGCircleElement>;
 
     var label = slider
       .selectAll('.label')
@@ -108,7 +99,7 @@ const DragSliderAnimation: React.FC = () => {
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .text('0')
-      .attr('transform', 'translate(0,' + -25 + ')') as TSelection<SVGTextElement>;
+      .attr('transform', 'translate(0,' + -25 + ')') as Selection<SVGTextElement>;
 
     setSelections({ handle, label, slider });
   }, [svg]);
@@ -146,8 +137,6 @@ const DragSliderAnimation: React.FC = () => {
       let currValInternal: number = timeValue;
       let targetValue = +svg.attr('width') - margin.left - margin.right;
 
-      console.log('step');
-
       currValInternal = currValInternal + targetValue / 300;
       if (currValInternal > maxTimeValue) {
         setMoving(false);
@@ -158,37 +147,6 @@ const DragSliderAnimation: React.FC = () => {
       updateAnimation(currValInternal);
     }
   }, 100);
-
-  // Step time when moving
-  // useEffect(() => {
-  //   if (!svg) return;
-
-  //   let timer = null;
-
-  //   let currValInternal: number = timeValue;
-  //   let targetValue = +svg.attr('width') - margin.left - margin.right;
-
-  //   const step = () => {
-  //     console.log('step');
-
-  //     currValInternal = currValInternal + targetValue / 300;
-  //     if (currValInternal > maxTimeValue) {
-  //       setMoving(false);
-  //       currValInternal = 0;
-  //       clearInterval(timer);
-  //       console.log('Slider moving: ' + moving);
-  //     }
-  //     updateAnimation(currValInternal);
-  //   };
-
-  //   if (moving) {
-  //     timer = setInterval(step, 100);
-  //     console.log('set interval');
-  //   }
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, [moving]);
 
   return (
     <div>
