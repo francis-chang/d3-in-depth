@@ -6,6 +6,7 @@ import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 // import { interpolate } from 'd3-interpolate';
 import * as d3 from 'd3';
 import './DragSliderAnimation.css';
+import useInterval from 'src/hooks/useInterval';
 
 type Selection = d3.Selection<SVGSVGElement | null, unknown, null, undefined>;
 
@@ -102,6 +103,10 @@ const DragSliderAnimation: React.FC = () => {
       .attr('transform', 'translate(0,' + -25 + ')');
 
     setSelections({ handle, label, slider });
+
+    return () => {
+      slider.remove();
+    };
   }, [svg]);
 
   // Add drag handler
@@ -132,36 +137,54 @@ const DragSliderAnimation: React.FC = () => {
     updateAnimation(0);
   }, [selections]);
 
-  // Step time when moving
-  useEffect(() => {
-    if (!svg) return;
+  useInterval(() => {
+    if (moving) {
+      let currValInternal: number = timeValue;
+      let targetValue = +svg.attr('width') - margin.left - margin.right;
 
-    let timer = null;
-
-    let currValInternal: number = timeValue;
-    let targetValue = +svg.attr('width') - margin.left - margin.right;
-
-    const step = () => {
       console.log('step');
 
       currValInternal = currValInternal + targetValue / 300;
       if (currValInternal > maxTimeValue) {
         setMoving(false);
         currValInternal = 0;
-        clearInterval(timer);
+
         console.log('Slider moving: ' + moving);
       }
       updateAnimation(currValInternal);
-    };
-
-    if (moving) {
-      timer = setInterval(step, 100);
-      console.log('set interval');
     }
-    return () => {
-      clearInterval(timer);
-    };
-  }, [moving]);
+  }, 100);
+
+  // Step time when moving
+  // useEffect(() => {
+  //   if (!svg) return;
+
+  //   let timer = null;
+
+  //   let currValInternal: number = timeValue;
+  //   let targetValue = +svg.attr('width') - margin.left - margin.right;
+
+  //   const step = () => {
+  //     console.log('step');
+
+  //     currValInternal = currValInternal + targetValue / 300;
+  //     if (currValInternal > maxTimeValue) {
+  //       setMoving(false);
+  //       currValInternal = 0;
+  //       clearInterval(timer);
+  //       console.log('Slider moving: ' + moving);
+  //     }
+  //     updateAnimation(currValInternal);
+  //   };
+
+  //   if (moving) {
+  //     timer = setInterval(step, 100);
+  //     console.log('set interval');
+  //   }
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, [moving]);
 
   return (
     <div>
