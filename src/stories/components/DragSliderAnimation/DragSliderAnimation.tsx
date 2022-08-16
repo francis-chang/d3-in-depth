@@ -66,11 +66,11 @@ const DragSliderAnimation: React.FC = () => {
         return d;
       });
 
-    slider.call(
+    const trackOverlay = svg.selectAll('.track-overlay');
+
+    trackOverlay.call(
       d3.drag().on('drag', function (event) {
-        // const me = d3.select(this);
-        // ToDo: not sure why i need to substract the margin
-        updateAnimation(x.invert(event.x - margin.left));
+        updateAnimation(x.invert(event.x));
         setMoving(false);
       })
     );
