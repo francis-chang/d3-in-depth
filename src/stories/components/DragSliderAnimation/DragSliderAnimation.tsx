@@ -24,6 +24,10 @@ const DragSliderAnimation: React.FC = () => {
   const svgRef = useRef<null | SVGSVGElement>(null);
   const [svg, setSvg] = useState<null | Selection>(null);
 
+  const handleRef = useRef<null | SVGCircleElement>(null);
+  const labelRef = useRef<null | SVGTextElement>(null);
+  const sliderRef = useRef<null | SVGGElement>(null);
+
   const [moving, setMoving] = useState(false);
   const [timeValue, setTimeValue] = useState(0);
 
@@ -60,12 +64,7 @@ const DragSliderAnimation: React.FC = () => {
       return;
     }
 
-    const slider = svg
-      .selectAll('.slider')
-      .data([''])
-      .join('g')
-      .attr('class', 'slider')
-      .attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')') as Selection<SVGGElement>;
+    const slider = svg.selectAll('.slider').attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')') as Selection<SVGGElement>;
 
     slider
       .selectAll('.track-lines')
@@ -77,9 +76,6 @@ const DragSliderAnimation: React.FC = () => {
 
     slider
       .selectAll('.ticks')
-      .data([''])
-      .join('g')
-      .attr('class', 'ticks')
       .attr('transform', 'translate(0,' + 18 + ')')
       .selectAll('text')
       .data(x.ticks(10))
@@ -90,13 +86,10 @@ const DragSliderAnimation: React.FC = () => {
         return d;
       });
 
-    const handle = slider.selectAll('.handle').data(['']).join('circle').attr('class', 'handle').attr('r', 9) as Selection<SVGCircleElement>;
+    const handle = slider.selectAll('.handle').attr('r', 9) as Selection<SVGCircleElement>;
 
     var label = slider
       .selectAll('.label')
-      .data([''])
-      .join('text')
-      .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .text('0')
       .attr('transform', 'translate(0,' + -25 + ')') as Selection<SVGTextElement>;
@@ -151,7 +144,11 @@ const DragSliderAnimation: React.FC = () => {
   return (
     <div>
       <svg ref={svgRef} width='960' height='500'>
-        {/* <g className='slider'></g> */}
+        <g ref={sliderRef} className='slider'>
+          <g className='ticks'></g>
+          <circle ref={handleRef} className='handle'></circle>
+          <text ref={labelRef} className='label'></text>
+        </g>
       </svg>
       <button
         id='play-button'
