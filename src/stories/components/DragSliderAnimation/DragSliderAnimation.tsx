@@ -93,8 +93,6 @@ const DragSliderAnimation: React.FC = () => {
       if (newSliderValue > xScale.domain()[1]) {
         setMoving(false);
         newSliderValue = 0;
-
-        console.log('Slider moving: ' + moving);
       }
       updateSlider(newSliderValue);
     }
