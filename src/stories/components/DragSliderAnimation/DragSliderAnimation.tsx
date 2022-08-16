@@ -8,8 +8,6 @@ type Selection<T extends d3.BaseType = SVGSVGElement> = d3.Selection<T | null, u
 
 const margin = { right: 50, left: 50 };
 
-const maxSliderValue = 180;
-
 const DragSliderAnimation: React.FC = () => {
   // Maybe don't need this
   const [svg, setSvg] = useState<null | Selection>(null);
@@ -31,7 +29,7 @@ const DragSliderAnimation: React.FC = () => {
   }, [svg]);
 
   const xScale = useMemo(() => {
-    return d3.scaleLinear().domain([0, maxSliderValue]).range([0, width]).clamp(true);
+    return d3.scaleLinear().domain([0, 180]).range([0, width]).clamp(true);
   }, [svg]);
 
   const updateSlider = useCallback(
@@ -91,8 +89,8 @@ const DragSliderAnimation: React.FC = () => {
 
   useInterval(() => {
     if (moving) {
-      let newSliderValue: number = sliderValue + maxSliderValue / 100;
-      if (newSliderValue > maxSliderValue) {
+      let newSliderValue: number = sliderValue + xScale.domain()[1] / 100;
+      if (newSliderValue > xScale.domain()[1]) {
         setMoving(false);
         newSliderValue = 0;
 
