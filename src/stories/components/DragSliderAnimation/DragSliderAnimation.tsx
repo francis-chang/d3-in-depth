@@ -59,15 +59,6 @@ const DragSliderAnimation: React.FC = () => {
     const slider = svg.selectAll('.slider').attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')') as Selection<SVGGElement>;
 
     slider
-      .selectAll('.track-lines')
-      .selectAll('line')
-      .data(['track', 'track-inset', 'track-overlay'])
-      .join('line')
-      .attr('class', (d) => `${d}`)
-      .attr('x1', x.range()[0])
-      .attr('x2', x.range()[1]);
-
-    slider
       .selectAll('.ticks')
       .attr('transform', 'translate(0,' + 18 + ')')
       .selectAll('text')
@@ -116,7 +107,9 @@ const DragSliderAnimation: React.FC = () => {
     <div>
       <svg ref={svgRef} width='960' height='500'>
         <g ref={sliderRef} className='slider'>
-          <g className='track-lines'></g>
+          {['track', 'track-inset', 'track-overlay'].map((className) => (
+            <line x1={x.range()[0]} x2={x.range()[1]} className={className} />
+          ))}
           <g className='ticks'></g>
           <circle ref={handleRef} className='handle'></circle>
           <text ref={labelRef} className='label'></text>
