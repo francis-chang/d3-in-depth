@@ -10,28 +10,20 @@ import useInterval from 'src/hooks/useInterval';
 
 type Selection<T extends d3.BaseType = SVGSVGElement> = d3.Selection<T | null, unknown, null, undefined>;
 
-interface ISelections {
-  handle: Selection<SVGCircleElement>;
-  label: Selection<SVGTextElement>;
-  slider: Selection<SVGGElement>;
-}
-
 const margin = { right: 50, left: 50 };
 
 const maxTimeValue = 180;
 
 const DragSliderAnimation: React.FC = () => {
-  const svgRef = useRef<null | SVGSVGElement>(null);
   const [svg, setSvg] = useState<null | Selection>(null);
 
+  const svgRef = useRef<null | SVGSVGElement>(null);
   const handleRef = useRef<null | SVGCircleElement>(null);
   const labelRef = useRef<null | SVGTextElement>(null);
   const sliderRef = useRef<null | SVGGElement>(null);
 
   const [moving, setMoving] = useState(false);
   const [timeValue, setTimeValue] = useState(0);
-
-  const [selections, setSelections] = useState<ISelections>(null);
 
   // ToDo: move memos to hook
   const { width, height } = useMemo(() => {
@@ -49,12 +41,12 @@ const DragSliderAnimation: React.FC = () => {
     (newTimeValue: number) => {
       if (!svg) return;
       svg.style('background-color', d3.hsl(newTimeValue, 0.8, 0.8) as any);
-      if (!selections) return;
-      selections.handle.attr('cx', x(newTimeValue));
-      selections.label.attr('x', x(newTimeValue)).text(Math.floor(newTimeValue));
+
+      d3.select(handleRef.current).attr('cx', x(newTimeValue));
+      d3.select(labelRef.current).attr('x', x(newTimeValue)).text(Math.floor(newTimeValue));
       setTimeValue(newTimeValue);
     },
-    [svg, selections]
+    [svg]
   );
 
   // Draw initial d3
@@ -86,23 +78,6 @@ const DragSliderAnimation: React.FC = () => {
         return d;
       });
 
-    const handle = slider.selectAll('.handle').attr('r', 9) as Selection<SVGCircleElement>;
-
-    var label = slider
-      .selectAll('.label')
-      .attr('text-anchor', 'middle')
-      .text('0')
-      .attr('transform', 'translate(0,' + -25 + ')') as Selection<SVGTextElement>;
-
-    setSelections({ handle, label, slider });
-  }, [svg]);
-
-  // Add drag handler
-  useEffect(() => {
-    if (!selections) return;
-
-    const { slider } = selections;
-
     slider.call(
       d3.drag().on('drag', function (event) {
         // const me = d3.select(this);
@@ -112,18 +87,41 @@ const DragSliderAnimation: React.FC = () => {
       })
     );
 
-    // cool effect but remove for mow
-    // slider
-    //   .transition() // Gratuitous intro!
-    //   .duration(750)
-    //   .tween('hue', function () {
-    //     var i = d3.interpolate(20, 0);
-    //     return function (t) {
-    //       updateAnimation(i(t));
-    //     };
-    //   });
+    slider.selectAll('.handle').attr('r', 9) as Selection<SVGCircleElement>;
+
+    slider
+      .selectAll('.label')
+      .attr('text-anchor', 'middle')
+      .text('0')
+      .attr('transform', 'translate(0,' + -25 + ')') as Selection<SVGTextElement>;
+
     updateAnimation(0);
-  }, [selections]);
+  }, [svg]);
+
+  // Add drag handler
+  // useEffect(() => {
+
+  //   slider.call(
+  //     d3.drag().on('drag', function (event) {
+  //       // const me = d3.select(this);
+  //       // ToDo: not sure why i need to substract the margin
+  //       updateAnimation(x.invert(event.x - margin.left));
+  //       setMoving(false);
+  //     })
+  //   );
+
+  //   // cool effect but remove for mow
+  //   // slider
+  //   //   .transition() // Gratuitous intro!
+  //   //   .duration(750)
+  //   //   .tween('hue', function () {
+  //   //     var i = d3.interpolate(20, 0);
+  //   //     return function (t) {
+  //   //       updateAnimation(i(t));
+  //   //     };
+  //   //   });
+  //   updateAnimation(0);
+  // }, [selections]);
 
   useInterval(() => {
     if (moving) {
