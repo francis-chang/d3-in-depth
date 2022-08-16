@@ -52,7 +52,7 @@ const DragSliderAnimation: React.FC = () => {
       return;
     }
 
-    const slider = svg.selectAll('.slider');
+    const slider = svg.select('.slider');
 
     slider
       .selectAll('.ticks')
@@ -66,7 +66,7 @@ const DragSliderAnimation: React.FC = () => {
         return d;
       });
 
-    const trackOverlay = svg.selectAll('.track-overlay');
+    const trackOverlay = svg.select('.track-overlay');
 
     trackOverlay.call(
       d3.drag().on('drag', function (event) {
