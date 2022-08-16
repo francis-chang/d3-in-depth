@@ -8,7 +8,7 @@ type Selection<T extends d3.BaseType = SVGSVGElement> = d3.Selection<T | null, u
 
 const margin = { right: 50, left: 50 };
 
-const maxTimeValue = 180;
+const maxSliderValue = 180;
 
 const DragSliderAnimation: React.FC = () => {
   // Maybe don't need this
@@ -20,7 +20,7 @@ const DragSliderAnimation: React.FC = () => {
   const sliderRef = useRef<null | SVGGElement>(null);
 
   const [moving, setMoving] = useState(false);
-  const [timeValue, setTimeValue] = useState(0);
+  const [sliderValue, setSliderValue] = useState(0);
 
   // ToDo: move memos to hook
   const { width, height } = useMemo(() => {
@@ -31,16 +31,16 @@ const DragSliderAnimation: React.FC = () => {
   }, [svg]);
 
   const xScale = useMemo(() => {
-    return d3.scaleLinear().domain([0, maxTimeValue]).range([0, width]).clamp(true);
+    return d3.scaleLinear().domain([0, maxSliderValue]).range([0, width]).clamp(true);
   }, [svg]);
 
-  const updateAnimation = useCallback(
-    (newTimeValue: number) => {
+  const updateSlider = useCallback(
+    (newValue: number) => {
       if (!svg) return;
-      svg.style('background-color', d3.hsl(newTimeValue, 0.8, 0.8) as any);
-      d3.select(handleRef.current).attr('cx', xScale(newTimeValue));
-      d3.select(labelRef.current).attr('x', xScale(newTimeValue)).text(Math.floor(newTimeValue));
-      setTimeValue(newTimeValue);
+      svg.style('background-color', d3.hsl(newValue, 0.8, 0.8) as any);
+      d3.select(handleRef.current).attr('cx', xScale(newValue));
+      d3.select(labelRef.current).attr('x', xScale(newValue)).text(Math.floor(newValue));
+      setSliderValue(newValue);
     },
     [svg]
   );
@@ -70,7 +70,7 @@ const DragSliderAnimation: React.FC = () => {
 
     trackOverlay.call(
       d3.drag().on('drag', function (event) {
-        updateAnimation(xScale.invert(event.x));
+        updateSlider(xScale.invert(event.x));
         setMoving(false);
       })
     );
@@ -86,19 +86,19 @@ const DragSliderAnimation: React.FC = () => {
     //     };
     //   });
 
-    updateAnimation(0);
+    updateSlider(0);
   }, [svg]);
 
   useInterval(() => {
     if (moving) {
-      let newTimeVal: number = timeValue + maxTimeValue / 100;
-      if (newTimeVal > maxTimeValue) {
+      let newSliderValue: number = sliderValue + maxSliderValue / 100;
+      if (newSliderValue > maxSliderValue) {
         setMoving(false);
-        newTimeVal = 0;
+        newSliderValue = 0;
 
         console.log('Slider moving: ' + moving);
       }
-      updateAnimation(newTimeVal);
+      updateSlider(newSliderValue);
     }
   }, 100);
 
