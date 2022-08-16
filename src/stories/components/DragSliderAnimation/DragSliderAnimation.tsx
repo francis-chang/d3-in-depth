@@ -30,7 +30,7 @@ const DragSliderAnimation: React.FC = () => {
     return { width: +svg.attr('width') - margin.left - margin.right, height: +svg.attr('height') };
   }, [svg]);
 
-  const x = useMemo(() => {
+  const xScale = useMemo(() => {
     return d3.scaleLinear().domain([0, maxTimeValue]).range([0, width]).clamp(true);
   }, [svg]);
 
@@ -38,8 +38,8 @@ const DragSliderAnimation: React.FC = () => {
     (newTimeValue: number) => {
       if (!svg) return;
       svg.style('background-color', d3.hsl(newTimeValue, 0.8, 0.8) as any);
-      d3.select(handleRef.current).attr('cx', x(newTimeValue));
-      d3.select(labelRef.current).attr('x', x(newTimeValue)).text(Math.floor(newTimeValue));
+      d3.select(handleRef.current).attr('cx', xScale(newTimeValue));
+      d3.select(labelRef.current).attr('x', xScale(newTimeValue)).text(Math.floor(newTimeValue));
       setTimeValue(newTimeValue);
     },
     [svg]
@@ -52,15 +52,15 @@ const DragSliderAnimation: React.FC = () => {
       return;
     }
 
-    const slider = svg.select('.slider');
+    const slider = svg.selectAll('.slider');
 
     slider
       .selectAll('.ticks')
       .attr('transform', 'translate(0,' + 18 + ')')
       .selectAll('text')
-      .data(x.ticks(10))
+      .data(xScale.ticks(10))
       .join('text')
-      .attr('x', x)
+      .attr('x', xScale)
       .attr('text-anchor', 'middle')
       .text(function (d) {
         return d;
@@ -70,7 +70,7 @@ const DragSliderAnimation: React.FC = () => {
 
     trackOverlay.call(
       d3.drag().on('drag', function (event) {
-        updateAnimation(x.invert(event.x));
+        updateAnimation(xScale.invert(event.x));
         setMoving(false);
       })
     );
@@ -91,7 +91,7 @@ const DragSliderAnimation: React.FC = () => {
 
   useInterval(() => {
     if (moving) {
-      let newTimeVal: number = timeValue + width / 300;
+      let newTimeVal: number = timeValue + maxTimeValue / 100;
       if (newTimeVal > maxTimeValue) {
         setMoving(false);
         newTimeVal = 0;
@@ -107,7 +107,7 @@ const DragSliderAnimation: React.FC = () => {
       <svg ref={svgRef} width='960' height='500'>
         <g ref={sliderRef} className='slider' transform={'translate(' + margin.left + ',' + height / 2 + ')'}>
           {['track', 'track-inset', 'track-overlay'].map((className) => (
-            <line x1={x.range()[0]} x2={x.range()[1]} className={className} />
+            <line x1={xScale.range()[0]} x2={xScale.range()[1]} className={className} />
           ))}
           <g className='ticks'></g>
           <circle ref={handleRef} r={9} className='handle'></circle>
