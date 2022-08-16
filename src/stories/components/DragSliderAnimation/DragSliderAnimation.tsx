@@ -102,9 +102,8 @@ const DragSliderAnimation: React.FC = () => {
   useInterval(() => {
     if (moving) {
       let currValInternal: number = timeValue;
-      let targetValue = +svg.attr('width') - margin.left - margin.right;
 
-      currValInternal = currValInternal + targetValue / 300;
+      currValInternal = currValInternal + width / 300;
       if (currValInternal > maxTimeValue) {
         setMoving(false);
         currValInternal = 0;
