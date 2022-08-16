@@ -52,7 +52,7 @@ const DragSliderAnimation: React.FC = () => {
       return;
     }
 
-    const slider = svg.selectAll('.slider').attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')');
+    const slider = svg.selectAll('.slider');
 
     slider
       .selectAll('.ticks')
@@ -75,11 +75,16 @@ const DragSliderAnimation: React.FC = () => {
       })
     );
 
-    slider
-      .selectAll('.label')
-      .attr('text-anchor', 'middle')
-      .text('0')
-      .attr('transform', 'translate(0,' + -25 + ')');
+    // cool effect but remove for mow
+    // slider
+    //   .transition() // Gratuitous intro!
+    //   .duration(750)
+    //   .tween('hue', function () {
+    //     var i = d3.interpolate(20, 0);
+    //     return function (t) {
+    //       updateAnimation(i(t));
+    //     };
+    //   });
 
     updateAnimation(0);
   }, [svg]);
@@ -100,7 +105,7 @@ const DragSliderAnimation: React.FC = () => {
   return (
     <div>
       <svg ref={svgRef} width='960' height='500'>
-        <g ref={sliderRef} className='slider'>
+        <g ref={sliderRef} className='slider' transform={'translate(' + margin.left + ',' + height / 2 + ')'}>
           {['track', 'track-inset', 'track-overlay'].map((className) => (
             <line x1={x.range()[0]} x2={x.range()[1]} className={className} />
           ))}
