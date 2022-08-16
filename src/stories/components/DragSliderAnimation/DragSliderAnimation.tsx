@@ -1,9 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
-// import { BaseType, Selection } from 'd3-selection';
-// import { scaleLinear } from 'd3-scale';
-// import { drag } from 'd3-drag';
-// import { interpolate } from 'd3-interpolate';
 import * as d3 from 'd3';
 import './DragSliderAnimation.css';
 import useInterval from 'src/hooks/useInterval';
@@ -56,7 +52,7 @@ const DragSliderAnimation: React.FC = () => {
       return;
     }
 
-    const slider = svg.selectAll('.slider').attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')') as Selection<SVGGElement>;
+    const slider = svg.selectAll('.slider').attr('transform', 'translate(' + margin.left + ',' + height / 2 + ')');
 
     slider
       .selectAll('.ticks')
@@ -78,8 +74,6 @@ const DragSliderAnimation: React.FC = () => {
         setMoving(false);
       })
     );
-
-    slider.selectAll('.handle').attr('r', 9);
 
     slider
       .selectAll('.label')
@@ -111,8 +105,8 @@ const DragSliderAnimation: React.FC = () => {
             <line x1={x.range()[0]} x2={x.range()[1]} className={className} />
           ))}
           <g className='ticks'></g>
-          <circle ref={handleRef} className='handle'></circle>
-          <text ref={labelRef} className='label'></text>
+          <circle ref={handleRef} r={9} className='handle'></circle>
+          <text ref={labelRef} className='label' textAnchor='middle' transform={'translate(0,' + -25 + ')'}></text>
         </g>
       </svg>
       <button
