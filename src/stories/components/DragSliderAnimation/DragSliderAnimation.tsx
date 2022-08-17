@@ -74,13 +74,12 @@ const DragSliderAnimation: React.FC = () => {
     );
 
     // cool effect but remove for mow
-    // slider
-    //   .transition() // Gratuitous intro!
+    // d3.transition() // Gratuitous intro!
     //   .duration(750)
     //   .tween('hue', function () {
     //     var i = d3.interpolate(20, 0);
     //     return function (t) {
-    //       updateAnimation(i(t));
+    //       updateSlider(i(t));
     //     };
     //   });
 
